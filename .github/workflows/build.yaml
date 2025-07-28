@@ -1,0 +1,186 @@
+name: Build and Deploy to Sandbox
+
+on:
+  push:
+    branches: [ develop, test ]
+  pull_request:
+    branches: [ develop, test ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      jar_name: ${{ steps.store-jar-name.outputs.jar_name }}
+      app_runtime: ${{ steps.store-app-runtime.outputs.app_runtime }}
+      artifact_name: ${{ steps.clean-artifact-name.outputs.artifact_name }}
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4.2.2
+
+      - name: Cache dependencies
+        uses: actions/cache@v3.4.3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: "zulu"
+          java-version: 8
+
+      - name: Configure Maven Settings
+        run: |
+          mkdir -p ~/.m2
+          echo "<settings><servers><server><id>Repository</id><username>${{ secrets.ANYPOINT_USERNAME }}</username><password>${{ secrets.ANYPOINT_PASSWORD }}</password></server></servers></settings>" > ~/.m2/settings.xml
+
+      - name: Build with Maven
+        run: |
+          mvn -B package --file pom.xml \
+            -Danypoint.username=${{ secrets.ANYPOINT_USERNAME }} \
+            -Danypoint.password=${{ secrets.ANYPOINT_PASSWORD }} \
+            -Danypoint.platform.client_id=${{ secrets.ANYPOINT_CLIENT_ID }} \
+            -Danypoint.platform.client_secret=${{ secrets.ANYPOINT_CLIENT_SECRET }} \
+            -DskipMunitTests
+        env:
+          ANYPOINT_USERNAME: ${{ secrets.ANYPOINT_USERNAME }}
+          ANYPOINT_PASSWORD: ${{ secrets.ANYPOINT_PASSWORD }}
+
+      - name: Debug - List target directory
+        run: ls -la target/
+
+      - name: Extract Mule Runtime Version
+        id: store-app-runtime
+        run: |
+          APP_RUNTIME=$(mvn help:evaluate -Dexpression=app.runtime -q -DforceStdout || echo "4.9.0")
+          echo "Mule Runtime Version: $APP_RUNTIME"
+          echo "app_runtime=$APP_RUNTIME" >> $GITHUB_OUTPUT
+
+      - name: Find and store JAR name
+        id: store-jar-name
+        run: |
+          cd target
+          JAR_NAME=$(ls *.jar | grep -v "original" | head -n 1 || echo "NO_JAR_FOUND")
+          echo "Found JAR: $JAR_NAME"
+          echo "jar_name=$JAR_NAME" >> $GITHUB_OUTPUT
+
+      - name: Clean JAR name for artifact
+        id: clean-artifact-name
+        run: |
+          JAR_NAME="${{ steps.store-jar-name.outputs.jar_name }}"
+          if [[ "$JAR_NAME" != "NO_JAR_FOUND" ]]; then
+            CLEAN_ARTIFACT_NAME=$(echo "$JAR_NAME" | sed 's/\.jar$//' | sed 's/-mule-application$//')
+            echo "Cleaned artifact name: $CLEAN_ARTIFACT_NAME"
+            echo "artifact_name=$CLEAN_ARTIFACT_NAME" >> $GITHUB_OUTPUT
+          else
+            echo "No valid JAR found, using fallback artifact name"
+            echo "artifact_name=mule-application-fallback" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload JAR file
+        uses: actions/upload-artifact@v4.6.1
+        with:
+          name: ${{ steps.clean-artifact-name.outputs.artifact_name }}
+          path: target/${{ steps.store-jar-name.outputs.jar_name }}
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    if: (github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/test')) || (github.event_name == 'pull_request' && (github.base_ref == 'refs/heads/develop' || github.base_ref == 'refs/heads/test')) && needs.build.outputs.jar_name != 'NO_JAR_FOUND'
+    runs-on: ubuntu-latest
+    environment: sandbox
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: "zulu"
+          java-version: 8
+
+      - name: Cache dependencies
+        uses: actions/cache@v3.4.3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Create target directory
+        run: mkdir -p target
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4.1.9
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: target/
+
+      - name: Debug - List downloaded files
+        run: ls -la target/
+
+      - name: Set mule.env variable
+        id: set-env
+        run: |
+          if [[ "${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}" == "refs/heads/develop" ]]; then
+            echo "mule.env=dev" >> $GITHUB_ENV
+          elif [[ "${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}" == "refs/heads/test" ]]; then
+            echo "mule.env=test" >> $GITHUB_ENV
+          else
+            echo "mule.env=unknown" >> $GITHUB_ENV
+          fi
+
+      - name: Clean JAR name for application
+        id: clean-jar-name
+        run: |
+          JAR_NAME="${{ needs.build.outputs.jar_name }}"
+          if [[ "$JAR_NAME" != "NO_JAR_FOUND" ]]; then
+            CLEAN_APP_NAME=$(echo "$JAR_NAME" | sed 's/\.jar$//' | sed 's/-mule-application$//')
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              CLEAN_APP_NAME="${CLEAN_APP_NAME}-pr-${{ github.event.number }}"
+            fi
+            echo "Cleaned application name: $CLEAN_APP_NAME"
+            echo "app_name=$CLEAN_APP_NAME" >> $GITHUB_OUTPUT
+          else
+            echo "No valid JAR found, using fallback application name"
+            echo "app_name=${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
+          fi
+     
+      - name: Publish to Exchange
+        run: |
+          mvn deploy -DskipMunitTests \
+            -DcloudHub.applicationName=${{ github.event.repository.name }} \
+            -DcloudHub.environment=${{secrets.ANYPOINT_ENVIRONMENT}} \
+            -DcloudHub.target=Cloudhub-US-East-2 \
+            -DcloudHub.replicas=1 \
+            -DcloudHub.vCores=0.1 \
+            -DcloudHub.muleVersion=${{ needs.build.outputs.app_runtime }} \
+            -Danypoint.uri=https://anypoint.mulesoft.com \
+            -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
+            -Danypoint.platform.client_id=${{ secrets.ANYPOINT_CLIENT_ID }} \
+            -Danypoint.platform.client_secret=${{ secrets.ANYPOINT_CLIENT_SECRET }} \
+            -Dmule.env="${{ env.mule.env }}"  
+
+      - name: Deploy to CloudHub
+        env:
+          ANYPOINT_USERNAME: ${{ secrets.ANYPOINT_USERNAME }}
+          ANYPOINT_PASSWORD: ${{ secrets.ANYPOINT_PASSWORD }}
+        run: |
+          echo "Deploying with the following parameters:"
+          echo "App Name: ${{ steps.clean-jar-name.outputs.app_name }}"
+           mvn deploy -DmuleDeploy \
+            -DskipMunitTests \
+            -DcloudHub.applicationName=${{ github.event.repository.name }} \
+            -DcloudHub.environment=${{secrets.ANYPOINT_ENVIRONMENT}} \
+            -DcloudHub.target=Cloudhub-US-East-2 \
+            -DcloudHub.replicas=1 \
+            -DcloudHub.vCores=0.1 \
+            -DcloudHub.muleVersion=${{ needs.build.outputs.app_runtime }} \
+            -Danypoint.uri=https://anypoint.mulesoft.com \
+            -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
+            -Danypoint.platform.client_id=${{ secrets.ANYPOINT_CLIENT_ID }} \
+            -Danypoint.platform.client_secret=${{ secrets.ANYPOINT_CLIENT_SECRET }} \
+            -Dmule.env="${{ env.mule.env }}" 
+          

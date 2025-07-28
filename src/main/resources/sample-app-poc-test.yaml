@@ -1,0 +1,12 @@
+app:
+  port: "8081"
+
+api: 
+  name: "sample-app-poc"
+  id: "20439764"
+  
+http:
+  host: "6878ba3963f24f1fdc9f2d10.mockapi.io"
+  port: "443"
+  basepath: "/api/v1"
+  path: "consumer"
