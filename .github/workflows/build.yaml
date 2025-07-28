@@ -150,7 +150,7 @@ jobs:
      
       - name: Publish to Exchange
         run: |
-          mvn clean deploy -DskipMunitTests -U \
+          mvn clean deploy --settings .m2/settings.xml -DskipMunitTests -U \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
             -DcloudHub.environment=${{secrets.ANYPOINT_ENVIRONMENT}} \
             -DcloudHub.target=Cloudhub-US-East-2 \
@@ -170,7 +170,7 @@ jobs:
         run: |
           echo "Deploying with the following parameters:"
           echo "App Name: ${{ steps.clean-jar-name.outputs.app_name }}"
-           mvn deploy -DmuleDeploy \
+           mvn deploy --settings .m2/settings.xml -DmuleDeploy \
             -DskipMunitTests \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
             -DcloudHub.environment=${{secrets.ANYPOINT_ENVIRONMENT}} \
