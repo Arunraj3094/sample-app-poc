@@ -6,7 +6,7 @@
 
 	<groupId>c19755d5-1505-4421-b6da-f1ce4ef7d05b</groupId>
 	<artifactId>sample-mule-app-poc</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<packaging>mule-application</packaging>
 
 	<name>sample-app-poc</name>
