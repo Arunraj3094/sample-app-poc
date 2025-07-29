@@ -169,7 +169,7 @@ jobs:
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
             -Dmule.env="${{ env.mule.env }}" 
 
-      - name: Deploy to CloudHub
+      - name: Deploy to CloudHub 2.0
         env:
           ANYPOINT_USERNAME: ${{ secrets.ANYPOINT_USERNAME }}
           ANYPOINT_PASSWORD: ${{ secrets.ANYPOINT_PASSWORD }}
@@ -177,7 +177,8 @@ jobs:
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
           echo "<settings><servers><server><id>Repository</id><username>~~~Client~~~</username><password>${{ secrets.ANYPOINT_CLIENT_ID }}~?~${{ secrets.ANYPOINT_CLIENT_SECRET }}</password></server><server><id>anypoint-exchange-v3</id><username>~~~Client~~~</username><password>${{ secrets.ANYPOINT_CLIENT_ID }}~?~${{ secrets.ANYPOINT_CLIENT_SECRET }}</password></server></servers></settings>" > ~/.m2/settings.xml
-          mvn deploy --settings ~/.m2/settings.xml -DmuleDeploy \
+          # mvn deploy --settings ~/.m2/settings.xml -DmuleDeploy \
+          mvn mule:deploy --settings ~/.m2/settings.xml \
             -DskipMunitTests \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
             -DcloudHub.environment=${{ secrets.ANYPOINT_ENVIRONMENT }} \
