@@ -42,7 +42,7 @@
 						<replicas>${cloudHub.replicas}</replicas>
 						<vCores>${cloudHub.vCores}</vCores>
 						<username>${anypoint.username}</username>
-        				<password>${Danypoint.password}</password>
+        				<password>${anypoint.password}</password>
 						<businessGroupId>${anypoint.platform.organization}</businessGroupId>
 						<!-- <connectedAppClientId>${anypoint.platform.client.id}</connectedAppClientId>
 						<connectedAppClientSecret>${anypoint.platform.client.secret}</connectedAppClientSecret>
