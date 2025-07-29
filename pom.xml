@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>c19755d5-1505-4421-b6da-f1ce4ef7d05b</groupId>
 	<artifactId>sample-app-poc</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>mule-application</packaging>
 
 	<name>sample-app-poc</name>
@@ -45,7 +47,8 @@
         				<password>${anypoint.password}</password> -->
 						<server>Repository</server>
 						<businessGroupId>${anypoint.platform.organization}</businessGroupId>
-						<!-- <connectedAppClientId>${anypoint.platform.client.id}</connectedAppClientId>
+						<!--
+						<connectedAppClientId>${anypoint.platform.client.id}</connectedAppClientId>
 						<connectedAppClientSecret>${anypoint.platform.client.secret}</connectedAppClientSecret>
 						<connectedAppGrantType>client_credentials</connectedAppGrantType> -->
 						<deploymentTimeout>1000000</deploymentTimeout>
@@ -140,43 +143,43 @@
 
 	<repositories>
 		<repository>
-            <id>anypoint-exchange-v3</id>
-            <name>Anypoint Exchange</name>
-            <url>https://maven.anypoint.mulesoft.com/api/v3/maven</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>mulesoft-releases</id>
-            <name>MuleSoft Releases Repository</name>
-            <url>https://repository.mulesoft.org/releases/</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>Repository</id>
-            <name>Private Exchange repository</name>
-            <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/${project.groupId}/maven</url>
-            <layout>default</layout>
-        </repository>
+			<id>anypoint-exchange-v3</id>
+			<name>Anypoint Exchange</name>
+			<url>https://maven.anypoint.mulesoft.com/api/v3/maven</url>
+			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>mulesoft-releases</id>
+			<name>MuleSoft Releases Repository</name>
+			<url>https://repository.mulesoft.org/releases/</url>
+			<layout>default</layout>
+		</repository>
+		<repository>
+			<id>Repository</id>
+			<name>Private Exchange repository</name>
+			<url>https://maven.anypoint.mulesoft.com/api/v3/organizations/${project.groupId}/maven</url>
+			<layout>default</layout>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
-            <id>mulesoft-releases</id>
-            <name>mulesoft release repository</name>
-            <layout>default</layout>
-            <url>https://repository.mulesoft.org/releases/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
+			<id>mulesoft-releases</id>
+			<name>mulesoft release repository</name>
+			<layout>default</layout>
+			<url>https://repository.mulesoft.org/releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
 	</pluginRepositories>
 	<distributionManagement>
 		<repository>
-            <id>Repository</id>
-            <name>Corporate Repository</name>
-            <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/${project.groupId}/maven</url>
-            <layout>default</layout>
-        </repository>
+			<id>Repository</id>
+			<name>Corporate Repository</name>
+			<url>https://maven.anypoint.mulesoft.com/api/v3/organizations/${project.groupId}/maven</url>
+			<layout>default</layout>
+		</repository>
 	</distributionManagement>
 
 </project>
