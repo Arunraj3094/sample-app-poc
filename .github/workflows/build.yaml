@@ -157,7 +157,7 @@ jobs:
         run: |
           echo "Client ID": "$CLIENT_ID"
           echo "Client Secret": "$CLIENT_SECRET"    
-           mvn -X clean deploy -DskipMunitTests -U \
+           mvn -X clean deploy --settings .maven/settings.xml -DskipMunitTests -U \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
             -DcloudHub.environment=${{secrets.ANYPOINT_ENVIRONMENT}} \
             -DcloudHub.target=Cloudhub-US-East-2 \
@@ -168,8 +168,8 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            -Danypoint.username="$ANYPOINT_USERNAME" \
-            -Danypoint.password="$ANYPOINT_PASSWORD" \
+            # -Danypoint.username="$ANYPOINT_USERNAME" \
+            # -Danypoint.password="$ANYPOINT_PASSWORD" \
             -Dmule.env="${{ env.mule.env }}"  
 
       - name: Deploy to CloudHub
@@ -185,7 +185,7 @@ jobs:
           echo "Client Secret": "$CLIENT_SECRET"
           echo "username": "$ANYPOINT_USERNAME"
           echo "password": "$ANYPOINT_PASSWORD"
-           mvn deploy -DmuleDeploy \
+           mvn deploy --settings .maven/settings.xml -DmuleDeploy \
             -DskipMunitTests \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
             -DcloudHub.environment=${{secrets.ANYPOINT_ENVIRONMENT}} \
@@ -197,7 +197,7 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            -Danypoint.username="$ANYPOINT_USERNAME" \
-            -Danypoint.password="$ANYPOINT_PASSWORD" \
+            # -Danypoint.username="$ANYPOINT_USERNAME" \
+            # -Danypoint.password="$ANYPOINT_PASSWORD" \
             -Dmule.env="${{ env.mule.env }}" 
           
