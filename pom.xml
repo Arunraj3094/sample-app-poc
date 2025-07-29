@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>c19755d5-1505-4421-b6da-f1ce4ef7d05b</groupId>
-	<artifactId>sample-app-poc</artifactId>
+	<artifactId>sample-mule-app-poc</artifactId>
 	<version>1.0.0</version>
 	<packaging>mule-application</packaging>
 
