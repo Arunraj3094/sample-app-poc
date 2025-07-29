@@ -155,11 +155,10 @@ jobs:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
-          echo "Client ID": "$CLIENT_ID"
-          echo "Client Secret": "$CLIENT_SECRET"    
-           mvn -X clean deploy --settings .maven/settings.xml -DskipMunitTests -U \
+          echo "<settings><servers><server><id>Repository</id><username>~~~Client~~~</username><password>${anypoint.platform.client.id}~?~${anypoint.platform.client.secret}</password></server><server><id>anypoint-exchange-v3</id><username>~~~Client~~~</username><password>${anypoint.platform.client.id}~?~${anypoint.platform.client.secret}</password></server></servers></servers></settings>" > ~/.m2/settings.xml
+          mvn -X clean deploy --settings ~/.m2/settings.xml -DskipMunitTests -U \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
-            -DcloudHub.environment=${{secrets.ANYPOINT_ENVIRONMENT}} \
+            -DcloudHub.environment=${{ secrets.ANYPOINT_ENVIRONMENT }} \
             -DcloudHub.target=Cloudhub-US-East-2 \
             -DcloudHub.replicas=1 \
             -DcloudHub.vCores=0.1 \
@@ -168,9 +167,7 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            # -Danypoint.username="$ANYPOINT_USERNAME" \
-            # -Danypoint.password="$ANYPOINT_PASSWORD" \
-            -Dmule.env="${{ env.mule.env }}"  
+            -Dmule.env="${{ env.mule.env }}" 
 
       - name: Deploy to CloudHub
         env:
@@ -179,16 +176,11 @@ jobs:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
-          echo "Deploying with the following parameters:"
-          echo "App Name: ${{ steps.clean-jar-name.outputs.app_name }}"
-          echo "Client ID": "$CLIENT_ID"
-          echo "Client Secret": "$CLIENT_SECRET"
-          echo "username": "$ANYPOINT_USERNAME"
-          echo "password": "$ANYPOINT_PASSWORD"
-           mvn deploy --settings .maven/settings.xml -DmuleDeploy \
+          echo "<settings><servers><server><id>Repository</id><username>~~~Client~~~</username><password>${anypoint.platform.client.id}~?~${anypoint.platform.client.secret}</password></server><server><id>anypoint-exchange-v3</id><username>~~~Client~~~</username><password>${anypoint.platform.client.id}~?~${anypoint.platform.client.secret}</password></server></servers></servers></settings>" > ~/.m2/settings.xml
+          mvn deploy --settings ~/.m2/settings.xml -DmuleDeploy \
             -DskipMunitTests \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
-            -DcloudHub.environment=${{secrets.ANYPOINT_ENVIRONMENT}} \
+            -DcloudHub.environment=${{ secrets.ANYPOINT_ENVIRONMENT }} \
             -DcloudHub.target=Cloudhub-US-East-2 \
             -DcloudHub.replicas=1 \
             -DcloudHub.vCores=0.1 \
@@ -197,7 +189,5 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            # -Danypoint.username="$ANYPOINT_USERNAME" \
-            # -Danypoint.password="$ANYPOINT_PASSWORD" \
-            -Dmule.env="${{ env.mule.env }}" 
+            -Dmule.env="${{ env.mule.env }}"
           
