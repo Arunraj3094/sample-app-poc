@@ -155,7 +155,7 @@ jobs:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
-          echo "<settings><servers><server><id>Repository</id><username>~~~Client~~~</username><password>${anypoint.platform.client.id}~?~${anypoint.platform.client.secret}</password></server><server><id>anypoint-exchange-v3</id><username>~~~Client~~~</username><password>${anypoint.platform.client.id}~?~${anypoint.platform.client.secret}</password></server></servers></servers></settings>" > ~/.m2/settings.xml
+          echo "<settings><servers><server><id>Repository</id><username>~~~Client~~~</username><password>${{ secrets.ANYPOINT_CLIENT_ID }}~?~${{ secrets.ANYPOINT_CLIENT_SECRET }}</password></server><server><id>anypoint-exchange-v3</id><username>~~~Client~~~</username><password>${{ secrets.ANYPOINT_CLIENT_ID }}~?~${{ secrets.ANYPOINT_CLIENT_SECRET }}</password></server></servers></settings>" > ~/.m2/settings.xml
           mvn -X clean deploy --settings ~/.m2/settings.xml -DskipMunitTests -U \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
             -DcloudHub.environment=${{ secrets.ANYPOINT_ENVIRONMENT }} \
@@ -176,7 +176,7 @@ jobs:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
-          echo "<settings><servers><server><id>Repository</id><username>~~~Client~~~</username><password>${anypoint.platform.client.id}~?~${anypoint.platform.client.secret}</password></server><server><id>anypoint-exchange-v3</id><username>~~~Client~~~</username><password>${anypoint.platform.client.id}~?~${anypoint.platform.client.secret}</password></server></servers></servers></settings>" > ~/.m2/settings.xml
+          echo "<settings><servers><server><id>Repository</id><username>~~~Client~~~</username><password>${{ secrets.ANYPOINT_CLIENT_ID }}~?~${{ secrets.ANYPOINT_CLIENT_SECRET }}</password></server><server><id>anypoint-exchange-v3</id><username>~~~Client~~~</username><password>${{ secrets.ANYPOINT_CLIENT_ID }}~?~${{ secrets.ANYPOINT_CLIENT_SECRET }}</password></server></servers></settings>" > ~/.m2/settings.xml
           mvn deploy --settings ~/.m2/settings.xml -DmuleDeploy \
             -DskipMunitTests \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
