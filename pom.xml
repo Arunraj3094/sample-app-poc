@@ -41,10 +41,12 @@
 						<applicationName>${cloudHub.applicationName}</applicationName>
 						<replicas>${cloudHub.replicas}</replicas>
 						<vCores>${cloudHub.vCores}</vCores>
+						<username>${anypoint.username}</username>
+        				<password>${Danypoint.password}</password>
 						<businessGroupId>${anypoint.platform.organization}</businessGroupId>
-						<connectedAppClientId>${anypoint.platform.client.id}</connectedAppClientId>
+						<!-- <connectedAppClientId>${anypoint.platform.client.id}</connectedAppClientId>
 						<connectedAppClientSecret>${anypoint.platform.client.secret}</connectedAppClientSecret>
-						<connectedAppGrantType>client_credentials</connectedAppGrantType>
+						<connectedAppGrantType>client_credentials</connectedAppGrantType> -->
 						<deploymentTimeout>1000000</deploymentTimeout>
 						<deploymentSettings>
 							<lastMileSecurity>false</lastMileSecurity>

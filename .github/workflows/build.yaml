@@ -168,6 +168,8 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
+            -Danypoint.username="$ANYPOINT_USERNAME" \
+            -Danypoint.password="$ANYPOINT_PASSWORD" \
             -Dmule.env="${{ env.mule.env }}"  
 
       - name: Deploy to CloudHub
@@ -181,6 +183,8 @@ jobs:
           echo "App Name: ${{ steps.clean-jar-name.outputs.app_name }}"
           echo "Client ID": "$CLIENT_ID"
           echo "Client Secret": "$CLIENT_SECRET"
+          echo "username": "$ANYPOINT_USERNAME"
+          echo "password": "$ANYPOINT_PASSWORD"
            mvn deploy -DmuleDeploy \
             -DskipMunitTests \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
@@ -193,5 +197,7 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
+            -Danypoint.username="$ANYPOINT_USERNAME" \
+            -Danypoint.password="$ANYPOINT_PASSWORD" \
             -Dmule.env="${{ env.mule.env }}" 
           
