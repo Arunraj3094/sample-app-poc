@@ -178,7 +178,11 @@ jobs:
           ANYPOINT_PASSWORD: ${{ secrets.ANYPOINT_PASSWORD }}
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
+          MULE_ENV: "${{ env.mule.env }}"
         run: |
+          echo "Deploying with the following parameters:"
+          echo "App Name: ${{ steps.clean-jar-name.outputs.app_name }}" 
+          echo "mule env: ${{ env.mule.env }}"
           mvn deploy --settings ~/.m2/settings.xml -DmuleDeploy \
             -DskipMunitTests \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
@@ -191,4 +195,4 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            -Dmule.env="${{ env.mule.env }}"
+            -Dmule.env= "$MULE_ENV"
