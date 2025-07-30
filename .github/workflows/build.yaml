@@ -190,7 +190,7 @@ jobs:
       #       -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
       #       -Danypoint.platform.client.id="$CLIENT_ID" \
       #       -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-      #       -Dmule.env="${{ env.mule.env }}" 
+      #       -Dmule.env=${{ env.MULE_ENV }}
 
       - name: Deploy to CloudHub 2.0
         env:
@@ -214,4 +214,4 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            -Dmule.env="${{ env.MULE_ENV }}"
+            -Dmule.env=${{ env.MULE_ENV }}
