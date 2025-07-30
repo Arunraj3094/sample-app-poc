@@ -121,16 +121,36 @@ jobs:
       - name: Debug - List downloaded files
         run: ls -la target/
 
-      - name: Set mule.env variable
+      - name: Set environment based on branch
         id: set-env
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
-            echo "mule.env=dev" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/test" ]]; then
-            echo "mule.env=test" >> $GITHUB_ENV
+          # Determine the target branch regardless of event type
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BRANCH="${{ github.base_ref }}"
           else
-            echo "mule.env=unknown" >> $GITHUB_ENV
+            BRANCH="${{ github.ref_name }}"
           fi
+          
+          echo "Target branch: $BRANCH"
+          
+          # Set environment based on branch
+          case $BRANCH in
+            "develop")
+              MULE_ENV="dev"
+              ;;
+            "test")
+              MULE_ENV="test"
+              ;;
+            "main"|"master")
+              MULE_ENV="prod"
+              ;;
+            *)
+              MULE_ENV="unknown"
+              ;;
+          esac
+        
+          echo "mule.env=$MULE_ENV" >> $GITHUB_ENV
+          echo "Environment set to: $MULE_ENV"
 
       - name: Clean JAR name for application
         id: clean-jar-name
@@ -181,7 +201,7 @@ jobs:
         run: |
           echo "Deploying with the following parameters:"
           echo "App Name: ${{ steps.clean-jar-name.outputs.app_name }}" 
-          echo "mule env: $mule.env"
+          echo "mule env: ${{ env.mule.env }}"
           mvn deploy --settings ~/.m2/settings.xml -DmuleDeploy \
             -DskipMunitTests \
             -DcloudHub.applicationName=${{ github.event.repository.name }} \
@@ -194,4 +214,4 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            -Dmule.env="$mule.env"
+            -Dmule.env="${{ env.mule.env }}"
