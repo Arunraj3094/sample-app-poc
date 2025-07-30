@@ -1,6 +1,8 @@
 {
   "minMuleVersion": "4.9.7",
+  "properties":["mule.env"],
   "javaSpecificationVersions": [
     "17"
-  ]
+  ],
+  "apiId": "${api.id}"
 }

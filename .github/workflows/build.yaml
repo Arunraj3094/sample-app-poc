@@ -172,25 +172,25 @@ jobs:
         run: |
           echo "<settings><servers><server><id>Repository</id><username>~~~Client~~~</username><password>${{ secrets.ANYPOINT_CLIENT_ID }}~?~${{ secrets.ANYPOINT_CLIENT_SECRET }}</password></server><server><id>anypoint-exchange-v3</id><username>~~~Client~~~</username><password>${{ secrets.ANYPOINT_CLIENT_ID }}~?~${{ secrets.ANYPOINT_CLIENT_SECRET }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
-      # - name: Publish to Exchange
-      #   env:
-      #     ANYPOINT_USERNAME: ${{ secrets.ANYPOINT_USERNAME }}
-      #     ANYPOINT_PASSWORD: ${{ secrets.ANYPOINT_PASSWORD }}
-      #     CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
-      #     CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
-      #   run: |
-      #     mvn -X deploy --settings ~/.m2/settings.xml -DskipMunitTests -U \
-      #       -DcloudHub.applicationName=${{ github.event.repository.name }} \
-      #       -DcloudHub.environment=${{ secrets.ANYPOINT_ENVIRONMENT }} \
-      #       -DcloudHub.target=Cloudhub-US-East-2 \
-      #       -DcloudHub.replicas=1 \
-      #       -DcloudHub.vCores=0.1 \
-      #       -DcloudHub.muleVersion=${{ needs.build.outputs.app_runtime }} \
-      #       -Danypoint.uri=https://anypoint.mulesoft.com \
-      #       -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
-      #       -Danypoint.platform.client.id="$CLIENT_ID" \
-      #       -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-      #       -Dmule.env=${{ env.MULE_ENV }}
+      - name: Publish to Exchange
+        env:
+          ANYPOINT_USERNAME: ${{ secrets.ANYPOINT_USERNAME }}
+          ANYPOINT_PASSWORD: ${{ secrets.ANYPOINT_PASSWORD }}
+          CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
+        run: |
+          mvn -X deploy --settings ~/.m2/settings.xml -DskipMunitTests -U \
+            -DcloudHub.applicationName=${{ github.event.repository.name }} \
+            -DcloudHub.environment=${{ secrets.ANYPOINT_ENVIRONMENT }} \
+            -DcloudHub.target=Cloudhub-US-East-2 \
+            -DcloudHub.replicas=1 \
+            -DcloudHub.vCores=0.1 \
+            -DcloudHub.muleVersion=${{ needs.build.outputs.app_runtime }} \
+            -Danypoint.uri=https://anypoint.mulesoft.com \
+            -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
+            -Danypoint.platform.client.id="$CLIENT_ID" \
+            -Danypoint.platform.client.secret="$CLIENT_SECRET" \
+            -Denv=${{ env.MULE_ENV }}
 
       - name: Deploy to CloudHub 2.0
         env:
@@ -214,4 +214,4 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            -Dmule.env=${{ env.MULE_ENV }}
+            -Denv=${{ env.MULE_ENV }}
