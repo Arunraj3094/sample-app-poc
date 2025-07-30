@@ -124,9 +124,9 @@ jobs:
       - name: Set mule.env variable
         id: set-env
         run: |
-          if [[ "${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}" == "refs/heads/develop" ]]; then
+          if [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
             echo "mule.env=dev" >> $GITHUB_ENV
-          elif [[ "${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}" == "refs/heads/test" ]]; then
+          elif [[ "${{ github.ref }}" == "refs/heads/test" ]]; then
             echo "mule.env=test" >> $GITHUB_ENV
           else
             echo "mule.env=unknown" >> $GITHUB_ENV
@@ -194,4 +194,4 @@ jobs:
             -Danypoint.platform.organization=${{ secrets.ANYPOINT_ORG_ID }} \
             -Danypoint.platform.client.id="$CLIENT_ID" \
             -Danypoint.platform.client.secret="$CLIENT_SECRET" \
-            -Dmule.env= "$mule.env"
+            -Dmule.env="$mule.env"
