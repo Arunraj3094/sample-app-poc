@@ -159,7 +159,7 @@ jobs:
       #     CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
       #     CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
       #   run: |
-      #     mvn -X clean deploy --settings ~/.m2/settings.xml -DskipMunitTests -U \
+      #     mvn -X deploy --settings ~/.m2/settings.xml -DskipMunitTests -U \
       #       -DcloudHub.applicationName=${{ github.event.repository.name }} \
       #       -DcloudHub.environment=${{ secrets.ANYPOINT_ENVIRONMENT }} \
       #       -DcloudHub.target=Cloudhub-US-East-2 \
